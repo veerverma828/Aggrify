@@ -76,7 +76,8 @@ function App() {
     let totalReceived = 0;
 
     // Create EventSource without pagination parameters
-    const url = `/api/search?q=${encodeURIComponent(query.trim())}`;
+    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+    const url = `${apiBaseUrl}/api/search?q=${encodeURIComponent(query.trim())}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;
 
