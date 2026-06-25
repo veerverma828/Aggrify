@@ -1,0 +1,87 @@
+const express = require('express');
+const router = express.Router();
+const { getCachedProducts, setCachedProducts } = require('../services/cache');
+const { scrapeBlinkit } = require('../scrapers/blinkitScraper');
+const { scrapeZepto } = require('../scrapers/zeptoScraper');
+
+router.get('/search', async (req, res) => {
+  const query = req.query.q;
+  const source = req.query.source || 'all'; // blinkit, zepto, all
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter "q" is required' });
+  }
+
+  // Set headers for Server-Sent Events (SSE)
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  let cancelled = false;
+  req.on('close', () => {
+    cancelled = true;
+  });
+
+  const isCancelled = () => cancelled;
+
+  // Check if we already have these results cached
+  const cachedProducts = getCachedProducts(query, source);
+
+  if (cachedProducts) {
+    console.log(`Cache HIT for query "${query}" and source "${source}" (cached count: ${cachedProducts.length})`);
+    res.write('data: ' + JSON.stringify({ products: cachedProducts }) + '\n\n');
+    res.write('event: done\ndata: {}\n\n');
+    res.end();
+    return;
+  }
+
+  console.log(`Cache MISS for query "${query}" and source "${source}". Running Playwright scraper(s)...`);
+  
+  const accumulated = [];
+
+  // Callback to handle newly scraped products
+  const onProducts = (newProducts) => {
+    accumulated.push(...newProducts);
+    res.write('data: ' + JSON.stringify({ products: newProducts }) + '\n\n');
+  };
+
+  try {
+    const scrapers = [];
+    if (source === 'all' || source === 'blinkit') {
+      scrapers.push(
+        scrapeBlinkit(query, onProducts, isCancelled).catch(err => {
+          console.error('Blinkit scraping error:', err);
+          if (source === 'blinkit') throw err;
+          res.write('data: ' + JSON.stringify({ error: 'Blinkit scraper failed: ' + err.message }) + '\n\n');
+        })
+      );
+    }
+    if (source === 'all' || source === 'zepto') {
+      scrapers.push(
+        scrapeZepto(query, onProducts, isCancelled).catch(err => {
+          console.error('Zepto scraping error:', err);
+          if (source === 'zepto') throw err;
+          res.write('data: ' + JSON.stringify({ error: 'Zepto scraper failed: ' + err.message }) + '\n\n');
+        })
+      );
+    }
+
+    await Promise.all(scrapers);
+    
+    // Cache the full scraped list (only if we actually got products)
+    if (accumulated.length > 0) {
+      setCachedProducts(query, source, accumulated);
+      console.log(`Cached ${accumulated.length} products for query "${query}" and source "${source}"`);
+    }
+
+    res.write('event: done\ndata: {}\n\n');
+  } catch (error) {
+    console.error('SSE Scraping Error:', error);
+    res.write('event: error\ndata: ' + JSON.stringify({ error: error.message }) + '\n\n');
+  } finally {
+    res.end();
+  }
+});
+
+module.exports = router;
