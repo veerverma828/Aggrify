@@ -650,3 +650,135 @@ body {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+
+/* Store Badge for Legacy Card */
+.store-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.provider-blinkit {
+  background: #25d366;
+  color: #000000;
+}
+
+.provider-zepto {
+  background: #701a75;
+  color: #ffffff;
+}
+
+.provider-compared {
+  background: linear-gradient(135deg, #701a75 0%, #d4a017 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Comparison Container inside Card */
+.comparison-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Comparison Row */
+.comparison-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.2s ease;
+}
+
+/* Best Price Row Highlight */
+.comparison-row.best-price {
+  background: rgba(212, 160, 23, 0.06);
+  border: 1px dashed rgba(212, 160, 23, 0.35);
+  box-shadow: 0 0 10px rgba(212, 160, 23, 0.05);
+}
+
+/* Store Dot Indicators */
+.provider-info {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.store-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.dot-blinkit {
+  background-color: #25d366;
+  color: #25d366;
+}
+
+.dot-zepto {
+  background-color: #d946ef;
+  color: #d946ef;
+}
+
+.provider-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* Price Details Column */
+.price-details-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.price-info {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.comparison-price {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.best-price .comparison-price {
+  background: linear-gradient(135deg, #D4A017 0%, #F5B932 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+}
+
+.comparison-original-price {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.comparison-delivery {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
