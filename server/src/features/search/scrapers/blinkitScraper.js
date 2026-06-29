@@ -1,7 +1,7 @@
 const { getBrowser } = require('../services/browser');
 
 async function scrapeBlinkit(query, onProducts, isCancelled) {
-  const browser = getBrowser();
+  const browser = await getBrowser();
 
   // Create a clean context for each search to avoid session cross-pollution
   const context = await browser.newContext({

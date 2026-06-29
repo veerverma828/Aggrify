@@ -3,7 +3,7 @@ const { getBrowser } = require('../services/browser');
 let zeptoStorageState = null;
 
 async function scrapeZepto(query, onProducts, isCancelled) {
-  const browser = getBrowser();
+  const browser = await getBrowser();
 
   // Create context (with storage state cache if available)
   const contextOptions = {

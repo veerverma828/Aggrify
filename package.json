@@ -5,19 +5,27 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"blue,cyan\" \"nodemon server.js\" \"npm run dev --prefix frontend\""
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"blue,cyan\" \"PORT=5000 node server.js\" \"npm run dev --prefix frontend\"",
+    "postinstall": "npm install --prefix frontend && npx playwright install chromium",
+    "build": "npm run build --prefix frontend",
+    "lint": "npm run lint --prefix frontend"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "devDependencies": {
-    "@playwright/test": "^1.61.1",
-    "@types/node": "^26.0.0",
-    "concurrently": "^10.0.3",
-    "nodemon": "^3.1.14"
-  },
   "dependencies": {
-    "express": "^5.2.1"
+    "@google/genai": "^2.10.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@playwright/test": "^1.61.1",
+    "axios": "^1.18.1",
+    "concurrently": "^10.0.3",
+    "dotenv": "^17.4.2",
+    "events": "^3.3.0",
+    "express": "^5.2.1",
+    "https-proxy-agent": "^9.1.0",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "uuid": "^14.0.1"
   }
 }

@@ -1,0 +1,6 @@
+{
+  "name": "Aggrify",
+  "description": "Real-time grocery scraper aggregator for quick commerce stores like Blinkit, Zepto, and Swiggy Instamart.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

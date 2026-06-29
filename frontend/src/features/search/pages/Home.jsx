@@ -1,113 +1,186 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import StoreSelector from '../components/StoreSelector';
-import SuggestionChips from '../components/SuggestionChips';
-import FeatureHighlightGrid from '../components/FeatureHighlightGrid';
+import LocationSelector from '../components/LocationSelector';
+import AiAgentPanel from '../components/AiAgentPanel';
+import { Sparkles } from 'lucide-react';
+
+const LIVE_INSIGHTS = [
+  { 
+    item: 'Amul Salted Butter 100g', 
+    savings: '▼ 22% SAVE', 
+    cheaperStore: 'zepto', 
+    prices: { blinkit: '₹62', zepto: '₹48' }, 
+    query: 'amul butter',
+    tag: 'Trending Deal'
+  },
+  { 
+    item: 'Coca-Cola Zero Sugar Can', 
+    savings: '▼ 12% SAVE', 
+    cheaperStore: 'blinkit', 
+    prices: { blinkit: '₹35', zepto: '₹40' }, 
+    query: 'coke zero',
+    tag: 'Best Price'
+  },
+  { 
+    item: 'Lay\'s Classic Salted Chips', 
+    savings: '▼ 33% SAVE', 
+    cheaperStore: 'zepto', 
+    prices: { blinkit: '₹30', zepto: '₹20' }, 
+    query: 'lays',
+    tag: 'Price Drop'
+  },
+  { 
+    item: 'Mother Dairy Toned Milk 1L', 
+    savings: '▼ 5% SAVE', 
+    cheaperStore: 'blinkit', 
+    prices: { blinkit: '₹54', zepto: '₹57' }, 
+    query: 'mother dairy milk',
+    tag: 'Popular'
+  },
+];
 
 export default function Home() {
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
-  const [source, setSource] = useState(() => {
-    return localStorage.getItem('aggrify_source') || 'all';
+  const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
+  const [location, setLocation] = useState(() => {
+    return localStorage.getItem('aggrify_location') || 'meerut';
   });
 
-  const handleSourceChange = (newSource) => {
-    setSource(newSource);
-    localStorage.setItem('aggrify_source', newSource);
+  const handleLocationChange = (newLocation) => {
+    setLocation(newLocation);
+    localStorage.setItem('aggrify_location', newLocation);
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchInput.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchInput.trim())}&source=${source}`);
+      navigate(`/search?q=${encodeURIComponent(searchInput.trim())}&source=all&location=${location}`);
     }
   };
 
   const handleChipClick = (query) => {
-    navigate(`/search?q=${encodeURIComponent(query)}&source=${source}`);
+    navigate(`/search?q=${encodeURIComponent(query)}&source=all&location=${location}`);
   };
 
   return (
-    <div className="min-h-screen w-full bg-zinc-950 text-zinc-200 flex flex-col relative overflow-x-hidden font-sans bg-grid-pattern pb-12">
-      <h2 className="sr-only">Aggrify — Compare prices across Blinkit &amp; Zepto</h2>
-
-      {/* Decorative Glow elements */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-rose-500/5 rounded-full blur-[150px] pointer-events-none"></div>
-      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none"></div>
-
-      {/* Top Header Navbar */}
-      <header className="w-full border-b border-zinc-900/60 bg-zinc-950/60 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-xl filter drop-shadow-[0_0_8px_rgba(225,29,72,0.6)]">⚡</span>
-            <span className="text-sm font-black uppercase tracking-widest bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">Aggrify</span>
+    <div className="min-h-screen lg:h-screen w-full flex flex-col bg-bg text-ink lg:overflow-hidden">
+      <header className="border-b-2 border-ink bg-bg z-50">
+        <div className="flex items-center justify-between h-16 px-4 md:px-0 md:grid md:grid-cols-[240px_1fr_300px] items-stretch">
+          {/* Logo */}
+          <div className="brand flex items-center px-2 md:px-8 border-r-0 md:border-r border-ink-faint">
+            <span className="hidden sm:inline">Aggrify<span className="text-accent">.</span></span>
+            <span className="inline sm:hidden text-accent text-xl font-black">A.</span>
           </div>
-          <div className="flex items-center space-x-6 text-xs font-semibold text-zinc-400">
-            <a href="#features" className="hover:text-white transition-colors duration-200">Features</a>
-            <span className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] text-emerald-400 font-bold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Scrapers Active
-            </span>
+          {/* Search bar */}
+          <div className="flex-1 flex items-center px-2 md:px-4">
+            <form onSubmit={handleSearchSubmit} className="flex w-full bg-ink-faint rounded-[4px] p-0.5 border border-transparent focus-within:border-accent">
+              <input 
+                type="text" 
+                placeholder="Search amul butter, milk, lays, cold drinks..." 
+                className="flex-1 bg-transparent border-none text-ink text-xs md:text-sm px-2.5 py-1.5 outline-none font-sans"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <button type="submit" className="bg-accent text-white border-none px-4 rounded-[2px] font-mono text-[10px] md:text-xs font-bold uppercase cursor-pointer tracking-wider">Execute</button>
+            </form>
+          </div>
+          {/* Location Selector */}
+          <div className="flex items-center justify-end px-2 md:px-8 border-l-0 md:border-l border-ink-faint gap-3 md:gap-6">
+            <div className="hidden md:inline label">Location</div>
+            <div className="bg-ink text-bg px-2 py-0.5 md:py-1 rounded-[2px] font-mono text-[9px] md:text-[10px] font-bold">
+              <LocationSelector
+                  selectedLocationId={location}
+                  onChange={handleLocationChange}
+                  activeTheme={{}}
+                  customTrigger={true}
+                />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Landing Area */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-4 md:py-6 flex flex-col items-center justify-center relative z-10 text-center space-y-6">
-        
-        {/* Pill Tag */}
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-zinc-800/80 bg-zinc-900/40 text-[9px] font-bold text-zinc-450 uppercase tracking-wider backdrop-blur-md">
-          <span className="w-1 h-1 rounded-full bg-rose-500 animate-pulse"></span>
-          <span>Hyperlocal Commerce Aggregator</span>
+      <main className="p-6 md:p-8 flex flex-col lg:grid lg:grid-cols-[1fr_350px] gap-8 lg:overflow-hidden flex-1">
+        <div className="lg:overflow-y-auto lg:pr-4 pb-12 flex-1">
+          <section className="mb-12 md:mb-16">
+            <div className="label mb-4">[ System Protocol 01 ]</div>
+            <h1 className="text-[clamp(2.5rem,6vw,5rem)] leading-[0.85] tracking-[-0.06em] uppercase mb-6 font-display">
+              Compare Prices<br/><span className="text-accent">Instantly.</span>
+            </h1>
+            <p className="max-w-[500px] text-[1.1rem] leading-[1.6] opacity-70">
+              Instantly aggregate products, prices, discounts, and real-time delivery estimates side-by-side from Blinkit, Zepto, and Swiggy Instamart.
+            </p>
+          </section>
+
+          <div className="label mb-6">Current Savings Spotlight</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {LIVE_INSIGHTS.map((insight, idx) => (
+              <div key={idx} onClick={() => handleChipClick(insight.query)} className="glass p-6 flex flex-col justify-between hover:border-accent cursor-pointer transition-colors min-h-[140px]">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="font-bold text-sm max-w-[70%]">{insight.item}</div>
+                  <div className="text-emerald-500 text-[11px] font-mono">{insight.savings}</div>
+                </div>
+                <div className="flex justify-between items-baseline pt-4 border-t border-dashed border-ink-faint">
+                  <div className="label flex items-center gap-2">
+                    {insight.cheaperStore === 'zepto' ? 'Blinkit' : 'Zepto'} 
+                    <span className="line-through opacity-50">{insight.cheaperStore === 'zepto' ? insight.prices.blinkit : insight.prices.zepto}</span>
+                  </div>
+                  <div className="font-mono text-xl font-bold flex items-center gap-2">
+                    <span className="text-[10px] uppercase opacity-50 font-sans tracking-widest">{insight.cheaperStore}</span>
+                    {insight.cheaperStore === 'zepto' ? insight.prices.zepto : insight.prices.blinkit}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Hero Title */}
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-white max-w-2xl font-display">
-            Compare quick commerce prices <br className="hidden sm:inline" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-rose-500 to-indigo-500">in real-time.</span>
-          </h1>
-          <p className="text-[10px] sm:text-[11px] text-zinc-450 max-w-md mx-auto leading-relaxed font-medium">
-            Compare prices, check availability, and view live delivery times from Blinkit and Zepto side-by-side. Save money instantly.
-          </p>
-        </div>
+        {/* Sidebar Panel */}
+        <div className="border-t lg:border-t-0 lg:border-l border-ink-faint pt-6 lg:pt-0 lg:pl-8 flex flex-col gap-6 lg:gap-8 lg:overflow-y-auto pb-12">
+          <div className="flex flex-col gap-2">
+            <h4 className="font-mono text-xs text-accent tracking-widest uppercase">Live Scrawlers</h4>
+            <p className="text-sm opacity-60 leading-[1.5]">Initiates high-performance headless browser workers instantly to fetch real-time grocery data.</p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <h4 className="font-mono text-xs text-accent tracking-widest uppercase">Unified Matching</h4>
+            <p className="text-sm opacity-60 leading-[1.5]">Proprietary string alignment algorithms align and merge diverse products across distinct stores.</p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <h4 className="font-mono text-xs text-accent tracking-widest uppercase">Best Deal Tagging</h4>
+            <p className="text-sm opacity-60 leading-[1.5]">Automatically highlights the cheapest platform with precise cost difference indicators.</p>
+          </div>
 
-        {/* Search Console */}
-        <div className="w-full max-w-xl space-y-3.5">
-          <form className="w-full bg-zinc-900/30 backdrop-blur-xl border border-zinc-850 rounded-2xl p-1.5 flex items-center shadow-2xl focus-within:border-zinc-700/80 focus-within:ring-2 focus-within:ring-rose-500/5 transition-all duration-300" onSubmit={handleSearchSubmit}>
-            <div className="text-zinc-555 ml-2.5 flex items-center justify-center shrink-0">
-              <i className="ti ti-search text-sm" aria-hidden="true"></i>
+          <div className="mt-auto pt-8">
+            <div className="label mb-4">Protocol Info</div>
+            <div className="flex flex-col gap-2">
+              <h4 className="font-mono text-xs text-accent tracking-widest uppercase">VERSION 2.6.0</h4>
+              <p className="text-sm opacity-60 leading-[1.5]">Aggrify is a discovery engine. Highlights the cheapest store hub matching your current coordinates.</p>
             </div>
-            <input
-              className="flex-1 bg-transparent border-0 outline-none text-zinc-100 placeholder-zinc-650 px-2.5 py-1.5 text-xs font-semibold"
-              type="text"
-              placeholder="Search milk, bread, snacks, household items..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              autoComplete="off"
-              aria-label="Search products"
-            />
-            {searchInput && (
-              <button type="button" onClick={() => setSearchInput('')} className="p-1.5 text-zinc-500 hover:text-zinc-350 mr-1 shrink-0">
-                <i className="ti ti-x text-xs"></i>
-              </button>
-            )}
-            <button type="submit" className="bg-zinc-900 text-zinc-350 border border-zinc-800 hover:bg-zinc-850 hover:text-white font-black text-[9px] uppercase tracking-wider px-4.5 py-2 rounded-xl shadow-md transition-all duration-150 active:scale-[0.97] shrink-0">
-              Compare
-            </button>
-          </form>
-
-          {/* Store Selector pills */}
-          <StoreSelector source={source} onChange={handleSourceChange} variant="home" />
+          </div>
         </div>
-
-        {/* Suggested Chips */}
-        <SuggestionChips onChipClick={handleChipClick} variant="home" />
-
-        {/* Feature Highlights Grid */}
-        <FeatureHighlightGrid />
-
       </main>
+
+      <footer className="min-h-12 py-3 flex flex-col sm:flex-row items-center justify-between px-6 md:px-8 gap-3 border-t border-ink-faint bg-black text-center sm:text-left">
+        <div className="label flex items-center">
+          <span className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span> Live Crawling Active
+        </div>
+        <div className="label text-[9px] sm:text-xs">© 2026 AGGRIFY AGENT — AGGREGATE. COMPARE. SAVE.</div>
+      </footer>
+
+      {!isAiAgentOpen && (
+        <button
+          onClick={() => setIsAiAgentOpen(true)}
+          className="fixed bottom-16 right-8 z-40 bg-accent hover:bg-orange-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-105"
+        >
+          <Sparkles className="w-6 h-6" />
+        </button>
+      )}
+
+      <AiAgentPanel 
+        isOpen={isAiAgentOpen} 
+        onClose={() => setIsAiAgentOpen(false)} 
+        locationParam={location} 
+      />
     </div>
   );
 }

@@ -3,10 +3,14 @@ const router = express.Router();
 const { getCachedProducts, setCachedProducts } = require('../services/cache');
 const { scrapeBlinkit } = require('../scrapers/blinkitScraper');
 const { scrapeZepto } = require('../scrapers/zeptoScraper');
+const { scrapeInstamart } = require('../scrapers/instamartScraper');
+const { LOCATIONS, DEFAULT_LOCATION } = require('../constants/locations');
 
 router.get('/search', async (req, res) => {
   const query = req.query.q;
-  const source = req.query.source || 'all'; // blinkit, zepto, all
+  const source = req.query.source || 'all'; // blinkit, zepto, instamart, all
+  const locationKey = (req.query.location || 'meerut').toLowerCase().trim();
+  const locationInfo = LOCATIONS[locationKey] || DEFAULT_LOCATION;
 
   if (!query) {
     return res.status(400).json({ error: 'Query parameter "q" is required' });
@@ -26,17 +30,17 @@ router.get('/search', async (req, res) => {
   const isCancelled = () => cancelled;
 
   // Check if we already have these results cached
-  const cachedProducts = getCachedProducts(query, source);
+  const cachedProducts = getCachedProducts(query, source, locationInfo.id);
 
   if (cachedProducts) {
-    console.log(`Cache HIT for query "${query}" and source "${source}" (cached count: ${cachedProducts.length})`);
+    console.log(`Cache HIT for query "${query}" and source "${source}" location "${locationInfo.id}" (cached count: ${cachedProducts.length})`);
     res.write('data: ' + JSON.stringify({ products: cachedProducts }) + '\n\n');
     res.write('event: done\ndata: {}\n\n');
     res.end();
     return;
   }
 
-  console.log(`Cache MISS for query "${query}" and source "${source}". Running Playwright scraper(s)...`);
+  console.log(`Cache MISS for query "${query}" and source "${source}" location "${locationInfo.id}". Running Playwright scraper(s)...`);
   
   const accumulated = [];
 
@@ -66,13 +70,22 @@ router.get('/search', async (req, res) => {
         })
       );
     }
+    if (source === 'all' || source === 'instamart') {
+      scrapers.push(
+        scrapeInstamart(query, locationInfo, onProducts, isCancelled).catch(err => {
+          console.error('Instamart scraping error:', err);
+          if (source === 'instamart') throw err;
+          res.write('data: ' + JSON.stringify({ error: 'Instamart scraper failed: ' + err.message }) + '\n\n');
+        })
+      );
+    }
 
     await Promise.all(scrapers);
     
     // Cache the full scraped list (only if we actually got products)
     if (accumulated.length > 0) {
-      setCachedProducts(query, source, accumulated);
-      console.log(`Cached ${accumulated.length} products for query "${query}" and source "${source}"`);
+      setCachedProducts(query, source, locationInfo.id, accumulated);
+      console.log(`Cached ${accumulated.length} products for query "${query}" source "${source}" location "${locationInfo.id}"`);
     }
 
     res.write('event: done\ndata: {}\n\n');

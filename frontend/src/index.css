@@ -1,22 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-mono: 'Space Mono', monospace;
   
-  --color-brand-primary: var(--color-rose-500);
-  --color-brand-secondary: var(--color-orange-500);
-  --color-brand-accent: var(--color-indigo-500);
+  --color-bg: #0c0c0d;
+  --color-ink: #f2f2f2;
+  --color-accent: #ff3e00;
+  --color-ink-faint: rgba(242, 242, 242, 0.1);
 }
 
 @layer base {
+  :root {
+    --bg: #0c0c0d;
+    --ink: #f2f2f2;
+    --accent: #ff3e00;
+    --ink-faint: rgba(242, 242, 242, 0.1);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
-    background-color: #030303;
-    color: #f4f4f5;
+    background-color: var(--bg);
+    color: var(--ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  @media (max-width: 1023px) {
+    body {
+      height: auto;
+      overflow: auto;
+    }
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--bg);
   }
 
   /* Custom Premium Scrollbar */
@@ -26,7 +54,7 @@
   }
   
   ::-webkit-scrollbar-track {
-    background: #09090b;
+    background: var(--bg);
   }
   
   ::-webkit-scrollbar-thumb {
@@ -39,25 +67,42 @@
   }
 }
 
-/* Custom premium design system details */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.5;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+.search-bar input {
+  font-family: var(--font-sans);
+}
+
+.search-bar button {
+  font-family: var(--font-mono);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ink-faint);
+}
+
 @utility bg-grid-pattern {
   background-image: 
-    linear-gradient(to right, rgba(63, 63, 70, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(63, 63, 70, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 32px 32px;
-}
-
-@utility text-glow-indigo {
-  text-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
-}
-
-@utility text-glow-rose {
-  text-shadow: 0 0 20px rgba(244, 63, 94, 0.2);
-}
-
-/* Custom glow element */
-.bg-glow-spot {
-  filter: blur(120px);
-  will-change: transform;
 }
 

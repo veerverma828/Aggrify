@@ -1,21 +1,33 @@
 const { chromium } = require('@playwright/test');
 
 let browser = null;
+let launchPromise = null;
 
 async function initBrowser() {
-  if (browser) return browser;
+  if (browser && browser.isConnected()) return browser;
+  if (launchPromise) return launchPromise;
+
   console.log('Launching headless browser...');
-  browser = await chromium.launch({
+  launchPromise = chromium.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
+  }).then(b => {
+    browser = b;
+    launchPromise = null;
+    console.log('Browser launched successfully.');
+    return browser;
+  }).catch(err => {
+    launchPromise = null;
+    throw err;
   });
-  console.log('Browser launched successfully.');
-  return browser;
+
+  return launchPromise;
 }
 
-function getBrowser() {
-  if (!browser) {
-    throw new Error('Browser is not initialized yet');
+async function getBrowser() {
+  if (!browser || !browser.isConnected()) {
+    console.log('Browser not initialized or disconnected. Initializing now...');
+    await initBrowser();
   }
   return browser;
 }
@@ -33,3 +45,4 @@ module.exports = {
   getBrowser,
   closeBrowser
 };
+
