@@ -67,7 +67,7 @@ const ProductCard = memo(function ProductCard({ product }) {
 
       <div className="flex flex-col flex-1">
         {/* Title */}
-        <h3 className="text-white font-medium text-sm leading-tight line-clamp-2 min-h-[2.5rem] mb-1" title={product.title}>
+        <h3 className="text-white font-medium text-sm leading-tight mb-1" title={product.title}>
           {product.title}
         </h3>
         
