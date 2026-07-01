@@ -1,17 +1,28 @@
 const { getBrowser } = require('../services/browser');
 
-let zeptoStorageState = null;
+// Per-location storage state cache
+const zeptoStorageStates = new Map();
 
-async function scrapeZepto(query, onProducts, isCancelled) {
+async function scrapeZepto(query, locationInfo, onProducts, isCancelled) {
   const browser = await getBrowser();
+  const locationId = locationInfo.id || 'bengaluru';
+  const locationAddress = locationInfo.locality
+    ? `${locationInfo.locality}, ${locationInfo.city}`
+    : locationInfo.city || 'Bengaluru';
 
-  // Create context (with storage state cache if available)
+  // Create context (with storage state cache per location if available)
   const contextOptions = {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    viewport: { width: 1280, height: 800 }
+    viewport: { width: 1280, height: 800 },
+    geolocation: { latitude: parseFloat(locationInfo.lat), longitude: parseFloat(locationInfo.lng) },
+    permissions: ['geolocation'],
+    locale: 'en-IN',
+    timezoneId: 'Asia/Kolkata'
   };
-  if (zeptoStorageState) {
-    contextOptions.storageState = zeptoStorageState;
+
+  const cachedState = zeptoStorageStates.get(locationId);
+  if (cachedState) {
+    contextOptions.storageState = cachedState;
   }
 
   const context = await browser.newContext(contextOptions);
@@ -36,9 +47,9 @@ async function scrapeZepto(query, onProducts, isCancelled) {
   });
 
   try {
-    // If no cached storage state, we must run the location selection flow
-    if (!zeptoStorageState) {
-      console.log('No Zepto storage state cached. Performing location selection...');
+    // If no cached storage state for this location, run the location selection flow
+    if (!cachedState) {
+      console.log(`[Zepto Scraper] No storage state cached for location "${locationId}". Performing location selection...`);
       await page.goto('https://www.zepto.com', { waitUntil: 'domcontentloaded', timeout: 30000 });
       
       const locationBtn = page.locator('button:has-text("Select Location")').first();
@@ -47,20 +58,21 @@ async function scrapeZepto(query, onProducts, isCancelled) {
 
       const addressInput = page.locator('input[placeholder*="Search"], input[placeholder*="address"], input[type="text"]').first();
       await addressInput.click();
-      await addressInput.fill('Indiranagar, Bengaluru');
+      await addressInput.fill(locationAddress);
       await page.waitForTimeout(3000); // wait for autocomplete
 
       const firstSuggestion = page.locator('span.line-clamp-2.break-all').first();
       await firstSuggestion.click();
       await page.waitForTimeout(5000); // wait for redirect and cookie write
 
-      // Save state for future searches
-      zeptoStorageState = await context.storageState();
-      console.log('Saved Zepto storage state successfully.');
+      // Save state for this location for future searches
+      const newState = await context.storageState();
+      zeptoStorageStates.set(locationId, newState);
+      console.log(`[Zepto Scraper] Saved storage state for location "${locationId}".`);
     }
 
     const searchUrl = `https://www.zepto.com/search?query=${encodeURIComponent(query)}`;
-    console.log(`Scraping Zepto URL: ${searchUrl}`);
+    console.log(`[Zepto Scraper] Scraping URL: ${searchUrl}`);
 
     await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
 
@@ -68,7 +80,7 @@ async function scrapeZepto(query, onProducts, isCancelled) {
     try {
       await page.waitForSelector('a[href^="/pn/"]', { timeout: 8000 });
     } catch (e) {
-      console.log('Zepto product elements not found within timeout.');
+      console.log('[Zepto Scraper] Product elements not found within timeout.');
       return;
     }
 
@@ -194,7 +206,7 @@ async function scrapeZepto(query, onProducts, isCancelled) {
     const maxScrollAttempts = 40;
     while (scrollAttempts < maxScrollAttempts) {
       if (isCancelled()) {
-        console.log('Zepto Scraping cancelled: Client disconnected.');
+        console.log('[Zepto Scraper] Scraping cancelled: Client disconnected.');
         break;
       }
 
@@ -219,9 +231,9 @@ async function scrapeZepto(query, onProducts, isCancelled) {
 
     await extractAndEmit(true);
   } catch (error) {
-    console.error('Error during Zepto scraping:', error);
-    // If it fails due to location selection drawer state, clear storage state so we retry clean next time
-    zeptoStorageState = null;
+    console.error('[Zepto Scraper] Error during scraping:', error);
+    // If it fails due to location selection state, clear storage state for this location so we retry clean
+    zeptoStorageStates.delete(locationId);
     throw error;
   } finally {
     await context.close();
@@ -231,3 +243,4 @@ async function scrapeZepto(query, onProducts, isCancelled) {
 module.exports = {
   scrapeZepto
 };
+

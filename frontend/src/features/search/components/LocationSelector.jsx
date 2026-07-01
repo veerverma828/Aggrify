@@ -4,6 +4,7 @@ import { LOCATIONS } from '../constants/locationConstants';
 
 export default function LocationSelector({ selectedLocationId, onChange, activeTheme = {}, customTrigger = false }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
   
   const selectedLocation = LOCATIONS.find(loc => loc.id === selectedLocationId) || LOCATIONS[0];
@@ -18,10 +19,21 @@ export default function LocationSelector({ selectedLocationId, onChange, activeT
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+    }
+  }, [isOpen]);
+
   const handleSelect = (locId) => {
     onChange(locId);
     setIsOpen(false);
   };
+
+  const filteredLocations = LOCATIONS.filter(loc => 
+    loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    loc.city.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="relative font-sans" ref={dropdownRef}>
@@ -50,24 +62,40 @@ export default function LocationSelector({ selectedLocationId, onChange, activeT
           <div className="px-3 py-2 border-b border-white/5 bg-white/[0.02]">
             <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Select Region</span>
           </div>
+          <div className="px-3 py-2 border-b border-white/5">
+            <input 
+              type="text" 
+              placeholder="Search location..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all"
+              autoFocus
+            />
+          </div>
           <div className="p-2 max-h-[300px] overflow-y-auto hide-scrollbar">
-            {LOCATIONS.map((loc) => (
-              <button
-                key={loc.id}
-                onClick={() => handleSelect(loc.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-colors text-left outline-none cursor-pointer border-none ${
-                  loc.id === selectedLocationId 
-                    ? 'bg-white/10 text-white font-medium' 
-                    : 'text-ink-muted bg-transparent hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <span>{loc.icon}</span>
-                  <span>{loc.name}</span>
-                </span>
-                {loc.id === selectedLocationId && <Check className="w-4 h-4 text-white" />}
-              </button>
-            ))}
+            {filteredLocations.length > 0 ? (
+              filteredLocations.map((loc) => (
+                <button
+                  key={loc.id}
+                  onClick={() => handleSelect(loc.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-colors text-left outline-none cursor-pointer border-none ${
+                    loc.id === selectedLocationId 
+                      ? 'bg-white/10 text-white font-medium' 
+                      : 'text-ink-muted bg-transparent hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span>{loc.icon}</span>
+                    <span>{loc.name}</span>
+                  </span>
+                  {loc.id === selectedLocationId && <Check className="w-4 h-4 text-white" />}
+                </button>
+              ))
+            ) : (
+              <div className="px-3 py-4 text-xs text-ink-muted text-center">
+                No regions found
+              </div>
+            )}
           </div>
         </div>
       )}

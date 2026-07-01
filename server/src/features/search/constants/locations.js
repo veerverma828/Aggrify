@@ -8,7 +8,8 @@ const LOCATIONS = {
     city: 'Meerut',
     locality: 'Meerut Cantt',
     state: 'Uttar Pradesh',
-    address: 'Meerut Cantt, Meerut, Uttar Pradesh 250001'
+    address: 'Meerut Cantt, Meerut, Uttar Pradesh 250001',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   bengaluru: {
     id: 'bengaluru',
@@ -19,7 +20,8 @@ const LOCATIONS = {
     city: 'Bengaluru',
     locality: 'Indiranagar',
     state: 'Karnataka',
-    address: 'Indiranagar, Bengaluru, Karnataka 560038'
+    address: 'Indiranagar, Bengaluru, Karnataka 560038',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   delhi: {
     id: 'delhi',
@@ -30,7 +32,8 @@ const LOCATIONS = {
     city: 'New Delhi',
     locality: 'Connaught Place',
     state: 'Delhi',
-    address: 'Connaught Place, New Delhi, Delhi 110001'
+    address: 'Connaught Place, New Delhi, Delhi 110001',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   mumbai: {
     id: 'mumbai',
@@ -41,7 +44,8 @@ const LOCATIONS = {
     city: 'Mumbai',
     locality: 'Andheri West',
     state: 'Maharashtra',
-    address: 'Andheri West, Mumbai, Maharashtra 400053'
+    address: 'Andheri West, Mumbai, Maharashtra 400053',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   noida: {
     id: 'noida',
@@ -52,7 +56,8 @@ const LOCATIONS = {
     city: 'Noida',
     locality: 'Sector 62',
     state: 'Uttar Pradesh',
-    address: 'Sector 62, Noida, Uttar Pradesh 201301'
+    address: 'Sector 62, Noida, Uttar Pradesh 201301',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   gurugram: {
     id: 'gurugram',
@@ -63,7 +68,8 @@ const LOCATIONS = {
     city: 'Gurugram',
     locality: 'DLF Phase 3',
     state: 'Haryana',
-    address: 'DLF Phase 3, Gurugram, Haryana 122002'
+    address: 'DLF Phase 3, Gurugram, Haryana 122002',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   }
 };
 

@@ -229,7 +229,7 @@ function getRandomSessionOptions() {
 
 async function scrapeInstamartInternal(query, locationInfo, onProducts, isCancelled) {
   const browser = await getBrowser();
-  const locationId = locationInfo.id || 'meerut';
+  const locationId = locationInfo.id || 'bengaluru';
 
   // Find a working proxy dynamically to bypass geo-blocking and AWS WAF
   const proxyServer = await getWorkingProxy(browser);
@@ -907,7 +907,7 @@ async function scrapeInstamart(query, locationInfo, onProducts, isCancelled) {
       console.log(`[Instamart Scraper] Attempt ${attempt + 1} failed: ${err.message}`);
       cachedProxy = null;
       proxyDiscoveryPromise = null;
-      instamartStorageStates.delete(locationInfo.id || 'meerut');
+      instamartStorageStates.delete(locationInfo.id || 'bengaluru');
       
       attempt++;
       if (attempt >= maxAttempts || isCancelled()) {

@@ -1,12 +1,16 @@
 const { getBrowser } = require('../services/browser');
 
-async function scrapeBlinkit(query, onProducts, isCancelled) {
+async function scrapeBlinkit(query, locationInfo, onProducts, isCancelled) {
   const browser = await getBrowser();
 
-  // Create a clean context for each search to avoid session cross-pollution
+  // Create a clean context for each search with dynamic geolocation
   const context = await browser.newContext({
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    viewport: { width: 1280, height: 800 }
+    viewport: { width: 1280, height: 800 },
+    geolocation: { latitude: parseFloat(locationInfo.lat), longitude: parseFloat(locationInfo.lng) },
+    permissions: ['geolocation'],
+    locale: 'en-IN',
+    timezoneId: 'Asia/Kolkata'
   });
   
   const page = await context.newPage();

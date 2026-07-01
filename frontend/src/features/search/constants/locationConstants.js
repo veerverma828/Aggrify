@@ -9,7 +9,8 @@ export const LOCATIONS = [
     locality: 'Meerut Cantt',
     state: 'Uttar Pradesh',
     address: 'Meerut Cantt, Meerut, Uttar Pradesh 250001',
-    icon: '📍'
+    icon: '📍',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   {
     id: 'bengaluru',
@@ -21,7 +22,8 @@ export const LOCATIONS = [
     locality: 'Indiranagar',
     state: 'Karnataka',
     address: 'Indiranagar, Bengaluru, Karnataka 560038',
-    icon: '🌳'
+    icon: '🌳',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   {
     id: 'delhi',
@@ -33,7 +35,8 @@ export const LOCATIONS = [
     locality: 'Connaught Place',
     state: 'Delhi',
     address: 'Connaught Place, New Delhi, Delhi 110001',
-    icon: '🏛️'
+    icon: '🏛️',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   {
     id: 'mumbai',
@@ -45,7 +48,8 @@ export const LOCATIONS = [
     locality: 'Andheri West',
     state: 'Maharashtra',
     address: 'Andheri West, Mumbai, Maharashtra 400053',
-    icon: '🌊'
+    icon: '🌊',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   {
     id: 'noida',
@@ -57,7 +61,8 @@ export const LOCATIONS = [
     locality: 'Sector 62',
     state: 'Uttar Pradesh',
     address: 'Sector 62, Noida, Uttar Pradesh 201301',
-    icon: '🏢'
+    icon: '🏢',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   },
   {
     id: 'gurugram',
@@ -69,7 +74,8 @@ export const LOCATIONS = [
     locality: 'DLF Phase 3',
     state: 'Haryana',
     address: 'DLF Phase 3, Gurugram, Haryana 122002',
-    icon: '✨'
+    icon: '✨',
+    supportedStores: ['blinkit', 'zepto', 'instamart']
   }
 ];
 

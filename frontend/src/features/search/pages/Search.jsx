@@ -8,6 +8,7 @@ import { getSearchEventSource } from '../services/searchApi';
 import { areProductsSame, parsePrice, getMatchKey } from '../utils/matching';
 import LocationSelector from '../components/LocationSelector';
 import AiAgentPanel from '../components/AiAgentPanel';
+import { LOCATIONS } from '../constants/locationConstants';
 
 export default function Search() {
   const navigate = useNavigate();
@@ -24,6 +25,10 @@ export default function Search() {
   const [view, setView] = useState('loading'); // loading, error, no-results, results
   const [isStreaming, setIsStreaming] = useState(false);
   const [errorMessage, setErrorMessage] = useState('Failed to retrieve search results. Please try again.');
+  const [unsupportedProviders, setUnsupportedProviders] = useState([]);
+
+  // Derive the active location object for supportedStores lookup
+  const activeLocation = LOCATIONS.find(l => l.id === locationParam) || LOCATIONS[0];
   
   const eventSourceRef = useRef(null);
   const isInitialMount = useRef(true);
@@ -64,6 +69,7 @@ export default function Search() {
     setView('loading');
     setProducts([]);
     setIsStreaming(false);
+    setUnsupportedProviders([]);
 
     let hasLoadedAny = false;
     let totalReceived = 0;
@@ -74,6 +80,9 @@ export default function Search() {
     es.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        if (data.providerStatus && data.providerStatus.status === 'unsupported') {
+          setUnsupportedProviders(prev => [...prev, data.providerStatus.provider]);
+        }
         if (data.products && data.products.length > 0) {
           if (!hasLoadedAny) {
             hasLoadedAny = true;
@@ -263,7 +272,13 @@ export default function Search() {
         
         {/* Sticky Filters */}
         <div className="sticky top-16 z-30 bg-bg/90 backdrop-blur-md py-4 border-b border-white/5 flex flex-col sm:flex-row sm:items-center gap-4">
-          <StoreSelector source={sourceParam} onChange={handleSourceChange} variant="search" />
+          <StoreSelector
+            source={sourceParam}
+            onChange={handleSourceChange}
+            variant="search"
+            supportedStores={activeLocation.supportedStores || null}
+            locationName={activeLocation.name || ''}
+          />
           <div className="hidden sm:block w-px h-6 bg-white/10"></div>
           <div className="overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
             <SuggestionChips onChipClick={handleChipClick} variant="search" />
@@ -354,6 +369,18 @@ export default function Search() {
               {filteredProducts.length === 0 && !isStreaming && (
                 <div className="text-center py-20 text-sm text-ink-muted">
                   No elements match the current store filter.
+                </div>
+              )}
+
+              {/* Unsupported Providers Banner */}
+              {unsupportedProviders.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {unsupportedProviders.map(provider => (
+                    <div key={provider} className="flex items-center gap-3 px-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-sm text-ink-muted">
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${provider === 'blinkit' ? 'bg-emerald-500/50' : provider === 'zepto' ? 'bg-purple-500/50' : 'bg-orange-500/50'}`}></span>
+                      <span><span className="capitalize font-medium text-white/60">{provider}</span> is not available in <span className="font-medium text-white/60">{activeLocation.name}</span>.</span>
+                    </div>
+                  ))}
                 </div>
               )}
 

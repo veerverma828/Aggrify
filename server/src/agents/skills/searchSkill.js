@@ -8,6 +8,7 @@ async function searchProductsSkill(query, locationParam = 'meerut') {
     const source = 'all';
     const locationKey = locationParam.toLowerCase().trim();
     const locationInfo = LOCATIONS[locationKey] || DEFAULT_LOCATION;
+    const supportedStores = locationInfo.supportedStores || ['blinkit', 'zepto', 'instamart'];
 
     const cachedProducts = getCachedProducts(query, source, locationInfo.id);
     if (cachedProducts) {
@@ -21,9 +22,15 @@ async function searchProductsSkill(query, locationParam = 'meerut') {
     };
 
     const scrapers = [];
-    scrapers.push(scrapeBlinkit(query, locationInfo, onProducts, isCancelled).catch(e => console.error(e)));
-    scrapers.push(scrapeZepto(query, locationInfo, onProducts, isCancelled).catch(e => console.error(e)));
-    scrapers.push(scrapeInstamart(query, locationInfo, onProducts, isCancelled).catch(e => console.error(e)));
+    if (supportedStores.includes('blinkit')) {
+        scrapers.push(scrapeBlinkit(query, locationInfo, onProducts, isCancelled).catch(e => console.error(e)));
+    }
+    if (supportedStores.includes('zepto')) {
+        scrapers.push(scrapeZepto(query, locationInfo, onProducts, isCancelled).catch(e => console.error(e)));
+    }
+    if (supportedStores.includes('instamart')) {
+        scrapers.push(scrapeInstamart(query, locationInfo, onProducts, isCancelled).catch(e => console.error(e)));
+    }
 
     await Promise.all(scrapers);
 

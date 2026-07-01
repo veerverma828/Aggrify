@@ -11,6 +11,7 @@ router.get('/search', async (req, res) => {
   const source = req.query.source || 'all'; // blinkit, zepto, instamart, all
   const locationKey = (req.query.location || 'meerut').toLowerCase().trim();
   const locationInfo = LOCATIONS[locationKey] || DEFAULT_LOCATION;
+  const supportedStores = locationInfo.supportedStores || ['blinkit', 'zepto', 'instamart'];
 
   if (!query) {
     return res.status(400).json({ error: 'Query parameter "q" is required' });
@@ -51,34 +52,52 @@ router.get('/search', async (req, res) => {
     res.write('data: ' + JSON.stringify({ products: newProducts }) + '\n\n');
   };
 
+  // Helper to check if a store is supported at the selected location
+  const isSupported = (store) => supportedStores.includes(store);
+
   try {
     const scrapers = [];
+
     if (source === 'all' || source === 'blinkit') {
-      scrapers.push(
-        scrapeBlinkit(query, onProducts, isCancelled).catch(err => {
-          console.error('Blinkit scraping error:', err);
-          if (source === 'blinkit') throw err;
-          res.write('data: ' + JSON.stringify({ error: 'Blinkit scraper failed: ' + err.message }) + '\n\n');
-        })
-      );
+      if (isSupported('blinkit')) {
+        scrapers.push(
+          scrapeBlinkit(query, locationInfo, onProducts, isCancelled).catch(err => {
+            console.error('Blinkit scraping error:', err);
+            if (source === 'blinkit') throw err;
+            res.write('data: ' + JSON.stringify({ error: 'Blinkit scraper failed: ' + err.message }) + '\n\n');
+          })
+        );
+      } else {
+        res.write('data: ' + JSON.stringify({ providerStatus: { provider: 'blinkit', status: 'unsupported', location: locationInfo.name } }) + '\n\n');
+      }
     }
+
     if (source === 'all' || source === 'zepto') {
-      scrapers.push(
-        scrapeZepto(query, onProducts, isCancelled).catch(err => {
-          console.error('Zepto scraping error:', err);
-          if (source === 'zepto') throw err;
-          res.write('data: ' + JSON.stringify({ error: 'Zepto scraper failed: ' + err.message }) + '\n\n');
-        })
-      );
+      if (isSupported('zepto')) {
+        scrapers.push(
+          scrapeZepto(query, locationInfo, onProducts, isCancelled).catch(err => {
+            console.error('Zepto scraping error:', err);
+            if (source === 'zepto') throw err;
+            res.write('data: ' + JSON.stringify({ error: 'Zepto scraper failed: ' + err.message }) + '\n\n');
+          })
+        );
+      } else {
+        res.write('data: ' + JSON.stringify({ providerStatus: { provider: 'zepto', status: 'unsupported', location: locationInfo.name } }) + '\n\n');
+      }
     }
+
     if (source === 'all' || source === 'instamart') {
-      scrapers.push(
-        scrapeInstamart(query, locationInfo, onProducts, isCancelled).catch(err => {
-          console.error('Instamart scraping error:', err);
-          if (source === 'instamart') throw err;
-          res.write('data: ' + JSON.stringify({ error: 'Instamart scraper failed: ' + err.message }) + '\n\n');
-        })
-      );
+      if (isSupported('instamart')) {
+        scrapers.push(
+          scrapeInstamart(query, locationInfo, onProducts, isCancelled).catch(err => {
+            console.error('Instamart scraping error:', err);
+            if (source === 'instamart') throw err;
+            res.write('data: ' + JSON.stringify({ error: 'Instamart scraper failed: ' + err.message }) + '\n\n');
+          })
+        );
+      } else {
+        res.write('data: ' + JSON.stringify({ providerStatus: { provider: 'instamart', status: 'unsupported', location: locationInfo.name } }) + '\n\n');
+      }
     }
 
     await Promise.all(scrapers);
@@ -99,3 +118,4 @@ router.get('/search', async (req, res) => {
 });
 
 module.exports = router;
+
