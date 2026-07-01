@@ -10,7 +10,7 @@ export const LOCATIONS = [
     state: 'Uttar Pradesh',
     address: 'Meerut Cantt, Meerut, Uttar Pradesh 250001',
     icon: '📍',
-    supportedStores: ['blinkit', 'zepto', 'instamart']
+    supportedStores: ['blinkit', 'instamart']
   },
   {
     id: 'bengaluru',

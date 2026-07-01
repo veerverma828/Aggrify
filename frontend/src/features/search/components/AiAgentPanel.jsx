@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Sparkles, X, ChevronRight, Activity, BrainCircuit } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
   const [messages, setMessages] = useState([
@@ -137,7 +138,7 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
                 </div>
                 <div className="flex flex-col gap-3 flex-1 min-w-0">
                   <div className="text-white text-[15px] leading-relaxed prose prose-invert prose-sm max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(msg.content.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')) }} />
                   </div>
                   
                   {msg.insights?.optimization?.bestBasket && (

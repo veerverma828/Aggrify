@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"blue,cyan\" \"PORT=5000 node server.js\" \"npm run dev --prefix frontend\"",
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"blue,cyan\" \"cross-env PORT=5000 node server.js\" \"npm run dev --prefix frontend\"",
     "postinstall": "npm install --prefix frontend && npx playwright install chromium",
     "build": "npm run build --prefix frontend",
     "lint": "npm run lint --prefix frontend"
@@ -27,5 +27,8 @@
     "playwright-extra": "^4.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0"
   }
 }

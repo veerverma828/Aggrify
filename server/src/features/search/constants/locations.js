@@ -9,7 +9,7 @@ const LOCATIONS = {
     locality: 'Meerut Cantt',
     state: 'Uttar Pradesh',
     address: 'Meerut Cantt, Meerut, Uttar Pradesh 250001',
-    supportedStores: ['blinkit', 'zepto', 'instamart']
+    supportedStores: ['blinkit', 'instamart']
   },
   bengaluru: {
     id: 'bengaluru',

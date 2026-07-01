@@ -24,6 +24,14 @@ app.get(/.*/, (req, res, next) => {
   res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
 });
 
+// Error handling middleware (must be last)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+  res.status(status).json({ error: message });
+});
+
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('Server is running at http://0.0.0.0:' + PORT);

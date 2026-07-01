@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Sparkles, Search as SearchIcon, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Sparkles, Search as SearchIcon, Loader2, AlertCircle } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import StoreSelector from '../components/StoreSelector';
 import SuggestionChips from '../components/SuggestionChips';
@@ -29,6 +29,14 @@ export default function Search() {
 
   // Derive the active location object for supportedStores lookup
   const activeLocation = LOCATIONS.find(l => l.id === locationParam) || LOCATIONS[0];
+  const supportedStores = activeLocation.supportedStores || ['blinkit', 'zepto', 'instamart'];
+  const sourceIsUnsupported = sourceParam !== 'all' && !supportedStores.includes(sourceParam);
+  const searchedStoreNames = sourceParam === 'all'
+    ? supportedStores.map(store => store === 'instamart' ? 'Swiggy Instamart' : store.charAt(0).toUpperCase() + store.slice(1))
+    : [sourceParam === 'instamart' ? 'Swiggy Instamart' : sourceParam.charAt(0).toUpperCase() + sourceParam.slice(1)];
+  const searchedStoresLabel = searchedStoreNames.length > 1
+    ? `${searchedStoreNames.slice(0, -1).join(', ')} & ${searchedStoreNames[searchedStoreNames.length - 1]}`
+    : searchedStoreNames[0] || 'available stores';
   
   const eventSourceRef = useRef(null);
   const isInitialMount = useRef(true);
@@ -187,6 +195,11 @@ export default function Search() {
   };
 
   useEffect(() => {
+    if (sourceIsUnsupported) {
+      setSearchParams({ q: queryParam, source: 'all', location: locationParam });
+      return;
+    }
+
     if (queryParam) {
       const isReload = isInitialMount.current && window.performance && window.performance.getEntriesByType && window.performance.getEntriesByType('navigation')[0]?.type === 'reload';
       performSearch(queryParam, sourceParam, locationParam, isReload);
@@ -199,7 +212,10 @@ export default function Search() {
 
   const handleLocationChange = (newLocation) => {
     localStorage.setItem('aggrify_location', newLocation);
-    setSearchParams({ q: queryParam, source: sourceParam, location: newLocation });
+    const newLocationInfo = LOCATIONS.find(l => l.id === newLocation) || LOCATIONS[0];
+    const nextSupportedStores = newLocationInfo.supportedStores || ['blinkit', 'zepto', 'instamart'];
+    const nextSource = sourceParam !== 'all' && !nextSupportedStores.includes(sourceParam) ? 'all' : sourceParam;
+    setSearchParams({ q: queryParam, source: nextSource, location: newLocation });
   };
 
   const handleSearchSubmit = (e) => {
@@ -295,8 +311,8 @@ export default function Search() {
                 <Loader2 className="w-8 h-8 text-white/50 animate-spin" />
                 <p className="text-sm font-medium text-ink-muted">
                   {sourceParam === 'all' 
-                    ? 'Merging live prices from Blinkit, Zepto & Instamart...' 
-                    : `Fetching live prices from ${sourceParam.charAt(0).toUpperCase() + sourceParam.slice(1)}...`}
+                    ? `Merging live prices from ${searchedStoresLabel}...`
+                    : `Fetching live prices from ${searchedStoresLabel}...`}
                 </p>
               </div>
               
@@ -338,7 +354,7 @@ export default function Search() {
               <SearchIcon className="w-10 h-10 text-white/20 mb-2" />
               <h2 className="text-lg font-semibold text-white">No matches found</h2>
               <p className="text-sm text-ink-muted leading-relaxed">
-                We couldn't find anything for "{searchInput}" on {sourceParam === 'all' ? 'Blinkit, Zepto, or Instamart' : sourceParam.charAt(0).toUpperCase() + sourceParam.slice(1)}. Try another query.
+                We couldn't find anything for "{searchInput}" on {searchedStoresLabel}. Try another query.
               </p>
             </div>
           )}
