@@ -33,7 +33,7 @@ const ProductCard = memo(function ProductCard({ product }) {
       {/* Badges Container */}
       <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10 pointer-events-none">
         {offersList.length > 1 ? (
-          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 backdrop-blur-md shadow-sm">
+          <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-600 text-white border border-blue-500 shadow-md">
             Aggregated
           </span>
         ) : (
