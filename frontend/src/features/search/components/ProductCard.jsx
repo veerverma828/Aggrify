@@ -27,93 +27,99 @@ const ProductCard = memo(function ProductCard({ product }) {
 
   return (
     <div 
-      className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-850 bg-zinc-900/10 backdrop-blur-md p-4 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-700/85 hover:bg-zinc-900/30 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5)] group w-full" 
+      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.02] border border-white/10 p-3 transition-all duration-300 hover:bg-white/[0.04] hover:-translate-y-1 hover:border-white/20 w-full"
       data-id={product.id}
     >
-      {/* Aggregated or Store Badge */}
-      {offersList.length > 1 ? (
-        <span className="absolute top-3 left-3 px-2.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider rounded-full bg-indigo-600 text-white z-10 shadow-md">
-          ⚡ Aggregated
-        </span>
-      ) : (
-        <span className={`absolute top-3 left-3 px-2.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider rounded-full z-10 shadow-md text-white ${
-          cheapestOffer.name === 'blinkit' 
-            ? 'bg-emerald-600' 
-            : cheapestOffer.name === 'zepto' 
-              ? 'bg-purple-600' 
-              : 'bg-zinc-600'
-        }`}>
-          {cheapestOffer.name === 'blinkit' ? 'Blinkit' : cheapestOffer.name === 'zepto' ? 'Zepto' : cheapestOffer.name}
-        </span>
-      )}
+      {/* Badges Container */}
+      <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10 pointer-events-none">
+        {offersList.length > 1 ? (
+          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 backdrop-blur-md shadow-sm">
+            Aggregated
+          </span>
+        ) : (
+          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm border ${
+            cheapestOffer.name === 'blinkit' 
+              ? 'bg-yellow-400 text-black border-yellow-300' 
+              : cheapestOffer.name === 'zepto' 
+                ? 'bg-purple-600 text-white border-purple-500' 
+                : 'bg-white/10 text-white border-white/20'
+          }`}>
+            {cheapestOffer.name === 'blinkit' ? 'Blinkit' : cheapestOffer.name === 'zepto' ? 'Zepto' : cheapestOffer.name}
+          </span>
+        )}
 
-      {/* Discount Badge */}
-      {bestDiscount && (
-        <div className="absolute top-3 right-3 z-10">
-          <span className="bg-rose-500 text-white text-[8px] font-black px-2.5 py-0.5 rounded-full shadow-md">
+        {bestDiscount && (
+          <span className="bg-rose-500/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm backdrop-blur-md">
             {bestDiscount}
           </span>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Image Container */}
-      <div className="w-full aspect-square rounded-xl bg-white flex items-center justify-center p-3 mb-4 overflow-hidden relative shadow-[inset_0_2px_8px_rgba(0,0,0,0.04)] border border-zinc-200/80">
-        <img className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]" src={imgUrl} alt={product.title} loading="lazy" />
+      <div className="w-full aspect-square rounded-xl bg-white flex items-center justify-center p-4 mb-4 overflow-hidden relative">
+        <img 
+          className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" 
+          src={imgUrl} 
+          alt={product.title} 
+          loading="lazy" 
+        />
       </div>
 
       <div className="flex flex-col flex-1">
         {/* Title */}
-        <h3 className="text-zinc-200 font-bold text-xs leading-snug line-clamp-2 min-h-[2.5rem] mb-1 group-hover:text-white transition-colors duration-200" title={product.title}>
+        <h3 className="text-white font-medium text-sm leading-tight line-clamp-2 min-h-[2.5rem] mb-1" title={product.title}>
           {product.title}
         </h3>
         
         {/* Weight */}
-        <span className="text-[10px] text-zinc-500 font-semibold tracking-wide mb-3 block">
+        <span className="text-[11px] text-ink-muted font-normal tracking-wide mb-4 block">
           {product.weight || '\u00a0'}
         </span>
         
         {/* Offers list */}
-        <div className="space-y-2 mt-auto">
+        <div className="space-y-1.5 mt-auto">
           {offersList.map((offer, index) => (
             <div 
               key={offer.name} 
-              className={`flex items-center justify-between p-2 rounded-xl border text-[11px] transition-all duration-150 ${
+              className={`flex items-center justify-between p-2.5 rounded-xl transition-all duration-200 border ${
                 index === 0 && offersList.length > 1 
-                  ? 'bg-emerald-950/20 border-emerald-500/25 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.02)]' 
-                  : 'bg-zinc-950/45 border-zinc-800/80 text-zinc-400'
+                  ? 'bg-emerald-500/5 border-emerald-500/20' 
+                  : 'bg-white/5 border-transparent'
               }`}
             >
-              <div className="flex items-center">
-                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${
+              <div className="flex items-center gap-2">
+                <span className={`w-1.5 h-1.5 rounded-full ${
                   offer.name === 'blinkit' 
-                    ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' 
-                    : 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]'
+                    ? 'bg-yellow-400' 
+                    : offer.name === 'zepto'
+                      ? 'bg-purple-500'
+                      : 'bg-orange-500'
                 }`}></span>
-                <span className="font-black uppercase tracking-wider text-[9px]">
-                  {offer.name === 'blinkit' ? 'Blinkit' : offer.name === 'zepto' ? 'Zepto' : offer.name}
+                <span className="font-medium text-xs text-white capitalize">
+                  {offer.name}
                 </span>
                 {index === 0 && offersList.length > 1 && (
-                  <span className="text-[8px] font-black uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded ml-1.5 tracking-wider shrink-0">
-                    Cheapest
+                  <span className="text-[9px] font-medium text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded ml-1">
+                    Best
                   </span>
                 )}
               </div>
-              <div className="text-right">
-                <div className="flex items-center justify-end">
+              <div className="text-right flex flex-col items-end">
+                <div className="flex items-center gap-1.5">
                   {offer.originalPrice && (
-                    <span className="text-[9px] line-through text-zinc-650 mr-1.5 font-medium">
+                    <span className="text-[10px] line-through text-ink-muted">
                       {offer.originalPrice}
                     </span>
                   )}
-                  <span className={`font-black text-xs ${
-                    index === 0 && offersList.length > 1 ? 'text-emerald-400' : 'text-zinc-100'
+                  <span className={`font-semibold text-sm ${
+                    index === 0 && offersList.length > 1 ? 'text-emerald-400' : 'text-white'
                   }`}>
                     {offer.price || 'N/A'}
                   </span>
                 </div>
                 {offer.delivery && (
-                  <span className="text-[8px] text-zinc-550 flex items-center gap-1 justify-end font-semibold mt-0.5">
-                    ⏱️ {offer.delivery}
+                  <span className="text-[9px] text-ink-muted flex items-center gap-1 mt-0.5">
+                    {offer.delivery}
                   </span>
                 )}
               </div>

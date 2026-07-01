@@ -1,0 +1,12 @@
+# Aggrify
+
+Aggrify is a real-time hyperlocal search and price comparison agent for quick-commerce platforms in India.
+
+## Resources
+- [Aggrify Homepage](http://localhost:5173/) - Main search interface
+- [Search Results](http://localhost:5173/search) - Unified catalog and price comparison
+
+## Key Features
+- Live real-time scrapers using headless browser workers
+- Unified product matching across distinct store catalogs
+- Best deal tagging with cost difference highlights

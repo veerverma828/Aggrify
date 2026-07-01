@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Bot, Sparkles, X, ChevronRight, Activity, DollarSign, BrainCircuit } from 'lucide-react';
+import { Send, Sparkles, X, ChevronRight, Activity, BrainCircuit } from 'lucide-react';
 
 export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
   const [messages, setMessages] = useState([
@@ -49,7 +49,7 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
         
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
-        buffer = lines.pop(); // Keep the last partial line in the buffer
+        buffer = lines.pop(); 
         
         for (const line of lines) {
           if (line.startsWith('event: ')) {
@@ -85,36 +85,36 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-full sm:w-[400px] md:w-[450px] bg-bg border-l-2 border-ink z-50 flex flex-col transform transition-transform duration-300 ease-in-out font-sans">
+    <div className="fixed inset-y-0 right-0 w-full sm:w-[450px] md:w-[450px] bg-bg/95 backdrop-blur-2xl border-l border-white/10 z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out font-sans">
       {/* Header */}
-      <div className="px-6 py-4 border-b-2 border-ink flex items-center justify-between bg-bg">
+      <div className="px-6 h-16 border-b border-white/5 flex items-center justify-between bg-transparent">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-accent flex items-center justify-center text-white rounded-[2px]">
+          <div className="w-8 h-8 bg-white/10 flex items-center justify-center text-white rounded-lg">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-sm font-black text-ink uppercase tracking-widest font-mono">AI Agent</h2>
-            <div className="text-[10px] text-emerald-500 flex items-center gap-1 font-mono uppercase font-bold mt-1">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Active
+            <h2 className="text-sm font-semibold text-white">AI Agent</h2>
+            <div className="text-[10px] text-emerald-400 flex items-center gap-1 font-medium mt-0.5">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Active
             </div>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 text-ink hover:text-accent hover:bg-ink-faint rounded-[2px] transition-colors cursor-pointer border-none bg-transparent">
-          <X className="w-5 h-5" />
+        <button onClick={onClose} className="p-2 text-ink-muted hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer border-none bg-transparent outline-none">
+          <X className="w-4 h-4" />
         </button>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm hide-scrollbar bg-bg">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm hide-scrollbar">
         {messages.map((msg, idx) => {
           if (msg.role === 'system') {
             return (
-              <div key={idx} className="flex flex-col gap-1 px-4 py-3 bg-ink-faint border border-ink-faint rounded-[2px] text-xs">
-                <div className="flex items-center gap-1.5 text-ink opacity-70 font-mono">
-                  {msg.state === 'running' ? <Activity className="w-3 h-3 animate-pulse text-accent" /> : <ChevronRight className="w-3 h-3" />}
-                  <span className="font-bold uppercase tracking-widest text-[10px]">{msg.agent}</span>
+              <div key={idx} className="flex flex-col gap-1 px-4 py-3 bg-white/[0.02] border border-white/5 rounded-2xl text-xs max-w-[85%] mx-auto">
+                <div className="flex items-center gap-1.5 text-ink-muted font-mono">
+                  {msg.state === 'running' ? <Activity className="w-3 h-3 animate-pulse text-emerald-400" /> : <ChevronRight className="w-3 h-3" />}
+                  <span className="font-medium text-[10px]">{msg.agent}</span>
                 </div>
-                <div className="text-ink opacity-60 font-mono ml-4 text-[10px]">{msg.message}</div>
+                <div className="text-ink-muted opacity-80 font-mono ml-4 text-[10px]">{msg.message}</div>
               </div>
             );
           }
@@ -122,7 +122,7 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
           if (msg.role === 'user') {
             return (
               <div key={idx} className="flex justify-end">
-                <div className="bg-ink text-bg px-4 py-3 rounded-[2px] max-w-[85%] font-medium">
+                <div className="bg-white text-black px-4 py-3 rounded-2xl rounded-tr-sm max-w-[85%] font-medium text-[15px] leading-relaxed shadow-sm">
                   {msg.content}
                 </div>
               </div>
@@ -131,33 +131,35 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
 
           if (msg.role === 'agent' && msg.type === 'result') {
             return (
-              <div key={idx} className="flex gap-3">
-                <div className="w-8 h-8 bg-ink-faint flex-shrink-0 flex items-center justify-center mt-1 rounded-[2px]">
-                  <Bot className="w-4 h-4 text-ink" />
+              <div key={idx} className="flex gap-4">
+                <div className="w-8 h-8 bg-white/10 flex-shrink-0 flex items-center justify-center rounded-lg mt-1">
+                  <Sparkles className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex flex-col gap-4 flex-1">
-                  <div className="bg-ink-faint text-ink px-4 py-4 rounded-[2px] prose prose-invert prose-sm max-w-none border border-transparent">
+                <div className="flex flex-col gap-3 flex-1 min-w-0">
+                  <div className="text-white text-[15px] leading-relaxed prose prose-invert prose-sm max-w-none">
                     <div dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                   </div>
+                  
                   {msg.insights?.optimization?.bestBasket && (
-                    <div className="glass p-4">
-                      <div className="flex items-center gap-1.5 text-emerald-500 font-bold text-[10px] font-mono uppercase tracking-widest mb-3">
-                        <DollarSign className="w-3.5 h-3.5" /> Optimizer Findings
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mt-2">
+                      <div className="flex items-center gap-2 text-emerald-400 font-medium text-xs mb-2">
+                        <Sparkles className="w-3 h-3" /> Optimizer Findings
                       </div>
-                      <div className="text-xs text-ink space-y-2">
-                        <div className="font-mono">Total Cost: <span className="text-emerald-500 font-bold text-sm">₹{msg.insights.optimization.totalCost}</span></div>
-                        <div className="opacity-70 leading-relaxed">{msg.insights.optimization.reasoning}</div>
+                      <div className="text-xs text-white space-y-1">
+                        <div className="font-medium">Total Cost: <span className="text-emerald-400 font-semibold text-sm">₹{msg.insights.optimization.totalCost}</span></div>
+                        <div className="text-emerald-400/80 leading-relaxed">{msg.insights.optimization.reasoning}</div>
                       </div>
                     </div>
                   )}
+                  
                   {msg.insights?.deals?.length > 0 && (
-                    <div className="glass p-4 border-accent/20">
-                      <div className="flex items-center gap-1.5 text-accent font-bold text-[10px] font-mono uppercase tracking-widest mb-3">
-                        <Sparkles className="w-3.5 h-3.5" /> Best Deals
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 mt-2">
+                      <div className="flex items-center gap-2 text-white font-medium text-xs mb-3">
+                        <Sparkles className="w-3 h-3" /> Best Deals
                       </div>
-                      <ul className="text-xs text-ink space-y-2 pl-4 list-square opacity-90 leading-relaxed">
+                      <ul className="text-xs text-ink-muted space-y-2 pl-4 list-disc opacity-90 leading-relaxed marker:text-white/30">
                         {msg.insights.deals.map((d, i) => (
-                          <li key={i}><span className="font-bold">{d.name}</span> from {d.store} &mdash; <span className="opacity-70">{d.reason}</span></li>
+                          <li key={i}><span className="text-white font-medium">{d.name}</span> from {d.store} &mdash; <span>{d.reason}</span></li>
                         ))}
                       </ul>
                     </div>
@@ -168,11 +170,11 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
           }
 
           return (
-            <div key={idx} className="flex gap-3">
-              <div className="w-8 h-8 bg-ink-faint flex-shrink-0 flex items-center justify-center mt-1 rounded-[2px]">
-                <Bot className="w-4 h-4 text-ink" />
+            <div key={idx} className="flex gap-4">
+              <div className="w-8 h-8 bg-white/10 flex-shrink-0 flex items-center justify-center rounded-lg mt-1">
+                <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <div className="bg-ink-faint text-ink px-4 py-3 rounded-[2px] leading-relaxed">
+              <div className="text-white text-[15px] leading-relaxed pt-1">
                 {msg.content}
               </div>
             </div>
@@ -180,30 +182,30 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
         })}
         
         {isProcessing && (
-          <div className="flex gap-2 items-center text-ink opacity-50 text-[10px] uppercase tracking-widest font-mono ml-11 mt-4">
-            <BrainCircuit className="w-3 h-3 animate-pulse text-accent" /> Agent is analyzing...
+          <div className="flex gap-2 items-center text-ink-muted text-xs font-medium ml-12 mt-4">
+            <BrainCircuit className="w-4 h-4 animate-pulse text-white" /> Thinking...
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
-      <div className="p-6 border-t-2 border-ink bg-bg">
-        <form onSubmit={handleSubmit} className="flex items-center gap-3">
+      <div className="p-4 bg-transparent border-t border-white/5">
+        <form onSubmit={handleSubmit} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-1.5 focus-within:ring-2 focus-within:ring-white/20 focus-within:border-white/20 transition-all">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your request here..."
-            className="flex-1 bg-ink-faint border border-transparent rounded-[2px] px-4 py-3 text-sm text-ink placeholder-ink/40 focus:outline-none focus:border-accent transition-colors font-sans"
+            placeholder="Ask AI anything..."
+            className="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none transition-colors font-sans"
             disabled={isProcessing}
           />
           <button 
             type="submit" 
             disabled={isProcessing || !input.trim()}
-            className="bg-accent hover:bg-orange-600 disabled:opacity-50 disabled:hover:bg-accent text-white p-3 rounded-[2px] transition-colors border-none cursor-pointer outline-none"
+            className="bg-white text-black hover:bg-neutral-200 disabled:opacity-50 disabled:hover:bg-white p-2.5 rounded-xl transition-colors border-none cursor-pointer outline-none flex items-center justify-center"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </button>
         </form>
       </div>
@@ -216,8 +218,11 @@ export default function AiAgentPanel({ isOpen, onClose, locationParam }) {
           background: transparent;
         }
         .hide-scrollbar::-webkit-scrollbar-thumb {
-          background-color: var(--ink-faint);
-          border-radius: 2px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 9999px;
+        }
+        .hide-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(255, 255, 255, 0.2);
         }
       `}</style>
     </div>

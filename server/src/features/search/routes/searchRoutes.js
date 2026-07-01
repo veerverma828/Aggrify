@@ -29,8 +29,9 @@ router.get('/search', async (req, res) => {
 
   const isCancelled = () => cancelled;
 
-  // Check if we already have these results cached
-  const cachedProducts = getCachedProducts(query, source, locationInfo.id);
+  // Check if we already have these results cached (unless force refresh is requested)
+  const forceRefresh = req.query.refresh === 'true';
+  const cachedProducts = forceRefresh ? null : getCachedProducts(query, source, locationInfo.id);
 
   if (cachedProducts) {
     console.log(`Cache HIT for query "${query}" and source "${source}" location "${locationInfo.id}" (cached count: ${cachedProducts.length})`);

@@ -1,23 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Syne', system-ui, sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
-  --color-bg: #0c0c0d;
-  --color-ink: #f2f2f2;
-  --color-accent: #ff3e00;
-  --color-ink-faint: rgba(242, 242, 242, 0.1);
+  --color-bg: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #121212;
+  --color-ink: #ededed;
+  --color-ink-muted: #888888;
+  --color-accent: #ededed;
+  --color-ink-faint: rgba(255, 255, 255, 0.05);
+  --color-border: rgba(255, 255, 255, 0.1);
 }
 
 @layer base {
   :root {
-    --bg: #0c0c0d;
-    --ink: #f2f2f2;
-    --accent: #ff3e00;
-    --ink-faint: rgba(242, 242, 242, 0.1);
+    --bg: #000000;
+    --bg-secondary: #0a0a0a;
+    --ink: #ededed;
+    --ink-muted: #888888;
+    --accent: #ededed;
+    --ink-faint: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
   }
 
   * {
@@ -31,78 +38,178 @@
     color: var(--ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  @media (max-width: 1023px) {
-    body {
-      height: auto;
-      overflow: auto;
-    }
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    overflow-y: auto;
   }
 
   ::selection {
-    background: var(--accent);
-    color: var(--bg);
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--ink);
   }
 
-  /* Custom Premium Scrollbar */
+  /* Sleek, invisible-until-hover scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   
   ::-webkit-scrollbar-track {
-    background: var(--bg);
+    background: transparent;
   }
   
   ::-webkit-scrollbar-thumb {
-    background: #27272a;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 9999px;
+    border: 2px solid var(--bg);
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: #3f3f46;
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
 .label {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  opacity: 0.5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  letter-spacing: 0.02em;
 }
 
 .brand {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .search-bar input {
   font-family: var(--font-sans);
 }
 
-.search-bar button {
-  font-family: var(--font-mono);
-}
-
 .glass {
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--ink-faint);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glass-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 @utility bg-grid-pattern {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Aurora backgrounds */
+.aurora-glow-purple {
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(140, 45, 233, 0.12) 0%, rgba(140, 45, 233, 0) 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: -5;
+  animation: float-slow 20s infinite alternate;
+}
+
+.aurora-glow-emerald {
+  position: absolute;
+  top: 45%;
+  right: 15%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0) 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -5;
+  animation: float-slower 25s infinite alternate-reverse;
+}
+
+.aurora-glow-orange {
+  position: absolute;
+  bottom: 10%;
+  left: 25%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 92, 38, 0.06) 0%, rgba(255, 92, 38, 0) 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: -5;
+  animation: float-slow 18s infinite alternate-reverse;
+}
+
+@keyframes float-slow {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 30px) scale(1.1); }
+}
+
+@keyframes float-slower {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-50px, -40px) scale(0.9); }
+}
+
+/* Brand styling cards */
+.card-zepto {
+  border-color: rgba(140, 45, 233, 0.15) !important;
+  background: linear-gradient(145deg, rgba(140, 45, 233, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+}
+.card-zepto:hover {
+  border-color: rgba(140, 45, 233, 0.4) !important;
+  box-shadow: 0 0 25px rgba(140, 45, 233, 0.15) !important;
+}
+
+.card-blinkit {
+  border-color: rgba(255, 199, 44, 0.15) !important;
+  background: linear-gradient(145deg, rgba(255, 199, 44, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+}
+.card-blinkit:hover {
+  border-color: rgba(255, 199, 44, 0.4) !important;
+  box-shadow: 0 0 25px rgba(255, 199, 44, 0.15) !important;
+}
+
+.card-instamart {
+  border-color: rgba(255, 92, 38, 0.15) !important;
+  background: linear-gradient(145deg, rgba(255, 92, 38, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+}
+.card-instamart:hover {
+  border-color: rgba(255, 92, 38, 0.4) !important;
+  box-shadow: 0 0 25px rgba(255, 92, 38, 0.15) !important;
+}
+
+/* Focus glow for search bar */
+.search-glow:focus-within {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Active status pulse */
+.pulse-emerald {
+  animation: pulse-emerald-ring 2s infinite;
+}
+
+@keyframes pulse-emerald-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
 }
 
